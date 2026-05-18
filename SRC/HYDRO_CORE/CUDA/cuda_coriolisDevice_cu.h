@@ -43,6 +43,7 @@ extern "C" int cuda_coriolisDeviceCleanup();
 */
 __device__ void cudaDevice_calcCoriolis(float* Frhs_u, float* Frhs_v, float* Frhs_w,
                                         float* rho, float* uMom, float* vMom, float* wMom,
-                                        float* rhoBS, float* uBS, float* vBS, float* wBS);
+                                        float* rhoBS, float* uBS, float* vBS, float* wBS,
+					float* lat);
 
 #endif // _CORIOLIS_CUDADEV_CU_H

@@ -26,6 +26,7 @@ __constant__ float corioLS_fact_d;            /*large-scale forcing factor on Co
 */
 extern "C" int cuda_coriolisDeviceSetup(){
    int errorCode = CUDA_CORIOLIS_SUCCESS;
+
    cudaMemcpyToSymbol(coriolisSelector_d, &coriolisSelector, sizeof(int));
    cudaMemcpyToSymbol(corioConstHorz_d, &corioConstHorz, sizeof(float));
    cudaMemcpyToSymbol(corioConstVert_d, &corioConstVert, sizeof(float));
@@ -52,10 +53,17 @@ extern "C" int cuda_coriolisDeviceCleanup(){
 */
 __device__ void cudaDevice_calcCoriolis(float* Frhs_u, float* Frhs_v, float* Frhs_w,
                                         float* rho, float* uMom, float* vMom, float* wMom,
-                                        float* rhoBS, float* uBS, float* vBS, float* wBS){
+                                        float* rhoBS, float* uBS, float* vBS, float* wBS,
+					float* lat){
+  float pi = acosf(-1.0);
+  float lat_factH;
+  float lat_factV;
 
-  *Frhs_u = *Frhs_u + ( corioConstHorz_d*((*vMom)/(*rho)-corioLS_fact_d*(*vBS)/(*rhoBS))
-                       -corioConstVert_d*((*wMom)/(*rho)-corioLS_fact_d*(*wBS)/(*rhoBS)) );
-  *Frhs_v = *Frhs_v - ( corioConstHorz_d*((*uMom)/(*rho)-corioLS_fact_d*(*uBS)/(*rhoBS)) );
-  *Frhs_w = *Frhs_w + ( corioConstVert_d*((*uMom)/(*rho)-corioLS_fact_d*(*uBS)/(*rhoBS)) );
+  lat_factH = sinf(pi/180.0*(*lat));
+  lat_factV = cosf(pi/180.0*(*lat));
+
+  *Frhs_u = *Frhs_u + ( corioConstHorz_d*lat_factH*((*vMom)/(*rho)-corioLS_fact_d*(*vBS)/(*rhoBS))
+                       -corioConstVert_d*lat_factV*((*wMom)/(*rho)-corioLS_fact_d*(*wBS)/(*rhoBS)) );
+  *Frhs_v = *Frhs_v - ( corioConstHorz_d*lat_factH*((*uMom)/(*rho)-corioLS_fact_d*(*uBS)/(*rhoBS)) );
+  *Frhs_w = *Frhs_w + ( corioConstVert_d*lat_factV*((*uMom)/(*rho)-corioLS_fact_d*(*uBS)/(*rhoBS)) );
 } // end cudaDevice_calcCoriolis()

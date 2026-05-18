@@ -1,5 +1,5 @@
 {
-  "name_dom": "FortCollinsCO",
+  "name_dom": "FEdomainName",
   "FE_ref_GIS_nc": "geospec_file.nc",
   "FE_params_file": "FE_parameters_file.in",
   "center_lat": 40.5948,
@@ -7,5 +7,8 @@
   "urban_opt": 0,
   "FE_new_nc_path": "/path_simgrid/",
   "name_dom_add": "",
+  "urban_heatRedis_opt": 0,
+  "landcover_table": "/path/to/LandCoverMetadata_NLCD16.csv",
+  "topo_average_opt": 0,
   "save_plot_opt": 1
 }
