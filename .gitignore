@@ -6,3 +6,5 @@
 
 # sphinx output
 docs/_build
+
+*.o

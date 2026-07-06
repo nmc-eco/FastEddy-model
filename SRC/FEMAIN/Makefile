@@ -31,6 +31,13 @@ TARGETS = \
 TEST_CC = mpicc
 TEST_CU_CC = nvcc
 
+CUDA_HOME ?= /usr/local/cuda
+CUDA_INC  = $(CUDA_HOME)/targets/x86_64-linux/include
+CUDA_LIB  = $(CUDA_HOME)/targets/x86_64-linux/lib
+
+MPI_INC = $(shell mpicc --showme:incdirs | sed 's|^|-I|; s| | -I|g')
+MPI_LIB = $(shell mpicc --showme:libdirs | sed 's|^|-L|; s| | -L|g')
+
 DEBUG_CFLAGS = -g 
 
 DEFINES = -DCUB_IGNORE_DEPRECATED_CPP_DIALECT -DTHRUST_IGNORE_DEPRECATED_CPP_DIALECT
@@ -43,10 +50,18 @@ L_CPPFLAGS =
 
 #OTHER_INCLUDES =
 # For compilation on NCAR's Casper or Derecho supercomputers use the OTHER_INCLUDES below
-OTHER_INCLUDES = -I${NCAR_ROOT_MPI}/include
+ifeq ($(strip $(NCAR_ROOT_MPI)),)
+OTHER_INCLUDES = \
+	$(MPI_INC) \
+	-I$(CUDA_INC)
+else
+OTHER_INCLUDES = \
+	-I${NCAR_ROOT_MPI}/include \
+	-I$(CUDA_INC)
+endif
 
-TEST_LDFLAGS = -L.
-TEST_CU_LDFLAGS = -L.
+TEST_LDFLAGS = -L. $(MPI_LIB) -L$(CUDA_LIB)
+TEST_CU_LDFLAGS = -L. $(MPI_LIB) -L$(CUDA_LIB)
 
 TEST_LIBS = -lm -lmpi -lstdc++ -lcurand -lcudart -lnetcdf
 TEST_CU_LIBS = -lm -lmpi -lcudart

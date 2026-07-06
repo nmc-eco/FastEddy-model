@@ -1,3 +1,6 @@
+> This patch allows installing FastEddy on Linux with CUDA support.
+> See details in `FastEddy_setup_README.md`.
+
 # FastEddy® 
 ©2016 University Corporation for Atmospheric Research
 
